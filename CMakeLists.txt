@@ -10,7 +10,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address --pedantic")
 
 add_library(ioparse STATIC src/parse.cpp src/prompt.cpp)
 
-# 2. Define include paths
 target_include_directories(ioparse
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -20,9 +19,6 @@ target_include_directories(ioparse
 )
 
 # find_package(Catch2 3 REQUIRED) # unit testing library
-
-# add_executable(app src/main.cpp src/parse.cpp src/prompt.cpp)
-
 
 # These tests can use the Catch2-provided main
 # add_executable(tests test.cpp)
