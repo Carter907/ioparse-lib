@@ -2,15 +2,15 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <string_view>
-#include <utility>
 
 // parse int to string
-std::pair<int, bool> parse_int(std::string_view sv);
-std::pair<double, bool> parse_double(std::string_view sv);
+std::optional<int> parse_int(std::string_view sv);
+std::optional<double> parse_double(std::string_view sv);
 double get_value(std::string_view prompt);
-size_t get_option(std::string_view prompt, size_t max_opts);
+std::size_t get_option(std::string_view prompt, size_t max_opts);
 
 inline double get_value(std::string_view prompt) {
 
@@ -20,19 +20,18 @@ inline double get_value(std::string_view prompt) {
     std::cout << prompt;
     std::getline(std::cin, in);
 
-    auto [value, status] = parse_double(in);
-
-    if (!status) {
-      std::cout << "Failed to parse your input. Try again.\n";
+    std::optional<double> in_fp = parse_double(in);
+    if (!in_fp.has_value()) {
+      std::cerr << "Failed to parse your input. Try again.\n";
       continue;
     }
 
-    return value;
+    return *in_fp;
 
   } while (true);
 }
 
-inline size_t get_option(std::string_view prompt, size_t max_opts) {
+inline std::size_t get_option(std::string_view prompt, size_t max_opts) {
 
   std::string in;
   do {
@@ -40,16 +39,15 @@ inline size_t get_option(std::string_view prompt, size_t max_opts) {
     std::cout << prompt;
     std::getline(std::cin, in);
 
-    auto [o, status] = parse_int(in);
-    size_t opt = static_cast<size_t>(o);
-
-    if (!status) {
-      std::cout << "Failed to parse your input. Try again.\n";
+    std::optional<int> in_n = parse_int(in);
+    if (!in_n.has_value()) {
+      std::cerr << "Failed to parse your input. Try again.\n";
       continue;
     }
+    size_t opt = static_cast<size_t>(*in_n);
 
     if (opt > max_opts || opt < 1) {
-      std::cout << "Your choice is impossible. Try again.\n";
+      std::cerr << "Your choice is impossible. Try again.\n";
       continue;
     }
 
@@ -57,24 +55,22 @@ inline size_t get_option(std::string_view prompt, size_t max_opts) {
 
   } while (true);
 }
-inline std::pair<int, bool> parse_int(std::string_view sv) {
-  std::stringstream ss;
+inline std::optional<int> parse_int(std::string_view s) {
+
+  std::stringstream ss{};
   int out;
-
-  if (!(ss << sv) || !(ss >> out)) {
-    return {out, false};
+  if (!(ss << s) || !(ss >> out)) {
+    return {};
   }
-
-  return {out, true};
+  return out;
 }
 
-inline std::pair<double, bool> parse_double(std::string_view sv) {
+inline std::optional<double> parse_double(std::string_view sv) {
   std::stringstream ss;
   double out;
-
   if (!(ss << sv) || !(ss >> out)) {
-    return {out, false};
+    return {};
   }
 
-  return {out, true};
+  return out;
 }
