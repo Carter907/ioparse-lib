@@ -66,7 +66,7 @@ inline std::optional<int> parse_int(std::string_view s) {
 }
 
 inline std::optional<double> parse_double(std::string_view sv) {
-  std::stringstream ss;
+  std::stringstream ss{};
   double out;
   if (!(ss << sv) || !(ss >> out)) {
     return {};
